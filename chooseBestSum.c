@@ -1,38 +1,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "chooseBestSum.h"
 
-int size;
+void compareSums(t_variables *variables, int currentSize, int maxSum, int *result){
+	int tmpSum = 0;
+	 for (int i = 0; i < currentSize; i++) {
+		tmpSum = variables->current[i] + tmpSum;
+	}
+	if (*result == -1 ||
+	(tmpSum <= maxSum &&
+	tmpSum > *result)){
+		*result = tmpSum;
+	}
+	if(tmpSum <= maxSum){
+		*variables->isValidFlag = 1;
+	}
+}
 
-void generateSubArraysSummariseThem(int* input, int* current, int currentSize, int index, int n, int *result, int maxSum, int *isValidFlag) {
-    int tmpSum;
-	tmpSum = 0;
-	if (currentSize == n) {
-        for (int i = 0; i < currentSize; i++) {
-			tmpSum = current[i] + tmpSum;
-	
-        }
-		if (*result == -1 ||
-		(tmpSum <= maxSum &&
-		tmpSum > *result)){
-			*result = tmpSum;
-		}
-		if(tmpSum <= maxSum){
-			*isValidFlag = 1;
-		}
+void addSubArrayElement(t_variables *variables, const int* input, int currentSize, int i){
+	variables->current[currentSize] = input[i];
+}
+
+void generateSubArraysSummariseThem(const int* input, t_variables *variables, int currentSize, int index, int numTownsVisit, int *result, int maxSum) {
+	if (currentSize == numTownsVisit) {
+		compareSums(variables, currentSize, maxSum, result);
         return;
     }
-
-    // Generate arrays recursively
     for (int i = index; i < size; i++) {
-        // Add the current element to the current array
-        current[currentSize] = input[i];
-
-        // Generate arrays with the next element
-        generateSubArraysSummariseThem(input, current, currentSize + 1, i + 1, n, result, maxSum, isValidFlag);
+		addSubArrayElement(variables, input, currentSize, i);
+        generateSubArraysSummariseThem(input, variables, currentSize + 1, i + 1, numTownsVisit, result, maxSum);
     }
 }
-static int isFunctionValid(maxSum, numTownsVisit){
+
+static int isFunctionValid(int maxSum, int numTownsVisit){
 	if (maxSum < 0 ||
 	numTownsVisit < 1 ||
 	numTownsVisit > size)
@@ -40,32 +41,35 @@ static int isFunctionValid(maxSum, numTownsVisit){
 	else
 		return 1;
 }
-// Returns result
-int *chooseBestSum(int maxSum, int numTownsVisit, int *input){
-	if(!isFunctionValid)
+
+t_variables* initializeVariables(int numTownsVisit) {
+    t_variables* variables = (t_variables*)malloc(sizeof(t_variables));
+    variables->current = (int*)malloc(numTownsVisit * sizeof(int));
+    variables->isValidFlag = (int*)malloc(sizeof(int));
+    *(variables->isValidFlag) = 0;
+    return variables;
+}
+
+void freeVariables(t_variables *variables){
+	free(variables->isValidFlag);
+    free(variables->current);
+	free(variables);
+}
+
+int *chooseBestSum(int maxSum, int numTownsVisit, const int *input){
+	if(!isFunctionValid(maxSum, numTownsVisit))
 		return NULL;
-	// if (maxSum < 0)
-	// 	return NULL;
-	// if (numTownsVisit < 1)
-	// 	return NULL;
-	// if (numTownsVisit > size)
-	// 	return NULL;
-
-	int* current = (int*)malloc(numTownsVisit * sizeof(int));
-	int* result = (int*)malloc(sizeof(int));
-	*result = -1;
-	int* isValidFlag = (int*)malloc(sizeof(int));
-	*isValidFlag = 0;
-
-    // Generate arrays starting from index 0
-    generateSubArraysSummariseThem(input, current, 0, 0, numTownsVisit, result, maxSum, isValidFlag);
-	printf("result=%d\n", *result);
-
-	free(isValidFlag);
-    free(current);
+	t_variables *variables = initializeVariables(numTownsVisit);
 	
-	if (isValidFlag == 0){
-		free(result);
+ 	int *result = (int*)malloc(sizeof(int));
+    *(result) = -1;
+
+    generateSubArraysSummariseThem(input, variables, 0, 0, numTownsVisit, result, maxSum);
+	printf("result=%d\n", (*result));
+	freeVariables(variables);
+
+	if (variables->isValidFlag == 0){
+		free(variables->result);
 		return(NULL);
 	}
 	else{
@@ -74,7 +78,7 @@ int *chooseBestSum(int maxSum, int numTownsVisit, int *input){
 }
 
 int main() {
-	int input[] = {50, 55, 56, 57, 58};
+	const int input[] = {50, 55, 56, 57, 58};
     int n = 3;  // Number of elements in each generated array
 	int maxSum = 163;
 	size = sizeof(input) / sizeof(input[0]);
