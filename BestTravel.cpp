@@ -16,7 +16,7 @@ vector<vector<int> > BestTravel::allSubsets(vector<int> distances)
     vector<int> subset;
 
     sort(distances.begin(), distances.end());
-    fillSubsetsWithSets(distances,  subsets, subset, 0);
+    fillSubsets(distances,  subsets, subset, 0);
     return (fromSetToVector(subsets));
 }
 
@@ -36,7 +36,7 @@ void BestTravel::caclulateResult(int target,  int townsVisited, vector<int>& dis
         {
             _bestSum = _sumOfValuesInSubset;
         }
-        resetSubsetSum();
+        resetSumSubset();
     }
 }
 
@@ -56,7 +56,7 @@ bool BestTravel::entryValid(int townsVisited, int size)
     return(townsVisited <= size);
 }
 
-void BestTravel::fillSubsetsWithSets(vector<int>& distances,
+void BestTravel::fillSubsets(vector<int>& distances,
            set<vector<int> >& subsets,
            vector<int> subset, int i)
 {
@@ -65,9 +65,9 @@ void BestTravel::fillSubsetsWithSets(vector<int>& distances,
         subsets.insert(subset);
         return;
     }
-    fillSubsetsWithSets(distances, subsets, subset, i + 1);
+    fillSubsets(distances, subsets, subset, i + 1);
     subset.push_back(distances[i]);
-    fillSubsetsWithSets(distances, subsets, subset, i + 1);
+    fillSubsets(distances, subsets, subset, i + 1);
 }
 
 void BestTravel::sumSubset(int i, int j)
@@ -75,7 +75,7 @@ void BestTravel::sumSubset(int i, int j)
     _sumOfValuesInSubset = _sumOfValuesInSubset + _subsets[i][j];
 }
 
-void BestTravel::resetSubsetSum()
+void BestTravel::resetSumSubset()
 {
     _sumOfValuesInSubset = 0;
 }  

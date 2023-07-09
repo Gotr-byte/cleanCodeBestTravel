@@ -15,12 +15,12 @@ class BestTravel
         ~BestTravel();
 
         vector<vector<int> > allSubsets(vector<int> distances);
-        void fillSubsetsWithSets(vector<int>& distances, set<vector<int> >& subsets, vector<int> subset, int i);
+        void fillSubsets(vector<int>& distances, set<vector<int> >& subsets, vector<int> subset, int i);
         void caclulateResult(int target,  int townsVisited, vector<int>& distances);
         bool entryValid(int townsVisited, int size);
         bool isBestSum(int target, int i, int townsVisited);
         bool initialEntry(int i, int townsVisited);
-        void resetSubsetSum();
+        void resetSumSubset();
         void sumSubset(int i, int j);
         vector<vector<int> > fromSetToVector(set<vector<int> > subsets);
 
